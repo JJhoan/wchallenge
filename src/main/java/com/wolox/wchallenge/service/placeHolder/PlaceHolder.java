@@ -1,12 +1,10 @@
-package com.wolox.wchallenge.service;
+package com.wolox.wchallenge.service.placeHolder;
 
-import org.springframework.jmx.access.InvalidInvocationException;
+public final class PlaceHolder<T> {
 
-final class PlaceHolder {
-
-    private PlaceHolder() {
-        throw new InvalidInvocationException("Invalid invocation");
-    }
+//    private PlaceHolder() {
+//        throw new InvalidInvocationException("Invalid invocation");
+//    }
 
     public static final String URL_PLACE_HOLDER = "https://jsonplaceholder.typicode.com";
 
@@ -15,6 +13,5 @@ final class PlaceHolder {
     public static final String PHOTOS = URL_PLACE_HOLDER + "/photos";
 
     public static final String ALBUMS = URL_PLACE_HOLDER + "/albums";
-
 
 }
