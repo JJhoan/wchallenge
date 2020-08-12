@@ -7,4 +7,6 @@ import java.util.List;
 public interface AlbumPlaceHolder {
 
     List<AlbumDto> list();
+
+    List<AlbumDto> findAlbumByUser(Long id);
 }
