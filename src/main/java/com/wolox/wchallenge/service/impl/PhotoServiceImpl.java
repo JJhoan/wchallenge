@@ -1,9 +1,9 @@
-package com.wolox.wchallenge.service.placeHolder;
+package com.wolox.wchallenge.service.impl;
 
 import com.wolox.wchallenge.dto.AlbumDto;
 import com.wolox.wchallenge.dto.PhotoDto;
-import com.wolox.wchallenge.dto.UserDto;
-import com.wolox.wchallenge.service.lists.PhotoList;
+import com.wolox.wchallenge.service.PhotoService;
+import com.wolox.wchallenge.constant.PlaceHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class PhotoPlaceHolderImpl implements PhotoPlaceHolder {
+public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public List<PhotoDto> list() {

@@ -3,9 +3,9 @@ package com.wolox.wchallenge.controller;
 import com.wolox.wchallenge.dto.AlbumDto;
 import com.wolox.wchallenge.dto.PhotoDto;
 import com.wolox.wchallenge.dto.UserDto;
-import com.wolox.wchallenge.service.placeHolder.AlbumPlaceHolder;
-import com.wolox.wchallenge.service.placeHolder.PhotoPlaceHolder;
-import com.wolox.wchallenge.service.placeHolder.UserPlaceHolder;
+import com.wolox.wchallenge.service.AlbumService;
+import com.wolox.wchallenge.service.PhotoService;
+import com.wolox.wchallenge.service.IUserService;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
 @RestController
 @RequestMapping(PhotoController.PHOTOS)
 public class PhotoController {
@@ -21,29 +22,30 @@ public class PhotoController {
 
     public static final String ALL = "/all";
 
-    public static final String PHOTOS_BY_USER = "/photosByUser/{username}";
+    public static final String PHOTOS_BY_USER = "/photosByUser/{idUser}";
 
-    public final PhotoPlaceHolder photoPlaceHolder;
+    public final PhotoService PhotoService;
 
-    public final UserPlaceHolder userPlaceHolder;
+    public final IUserService IUserService;
 
-    public final AlbumPlaceHolder albumPlaceHolder;
+    public final AlbumService AlbumService;
 
-    public PhotoController(PhotoPlaceHolder photoPlaceHolder, UserPlaceHolder userPlaceHolder, AlbumPlaceHolder albumPlaceHolder) {
-        this.photoPlaceHolder = photoPlaceHolder;
-        this.userPlaceHolder = userPlaceHolder;
-        this.albumPlaceHolder = albumPlaceHolder;
+    public PhotoController(PhotoService PhotoService, IUserService IUserService, AlbumService AlbumService) {
+        this.PhotoService = PhotoService;
+        this.IUserService = IUserService;
+        this.AlbumService = AlbumService;
     }
 
     @GetMapping(value = ALL)
     public List<PhotoDto> all() {
-        return photoPlaceHolder.list();
+        return PhotoService.list();
     }
 
     @GetMapping(value = PHOTOS_BY_USER )
-    public List<PhotoDto> photoByUser(@PathVariable String username) throws ChangeSetPersister.NotFoundException {
-        UserDto userDto = userPlaceHolder.findUser(username);
-        List<AlbumDto> albumDtoList = albumPlaceHolder.findAlbumByUser(userDto.getId());
-        return photoPlaceHolder.photosByUser(albumDtoList);
+//    @PreAuthorize("isMember(#idUser)")
+    public List<PhotoDto> photoByUser(@PathVariable Long idUser) throws ChangeSetPersister.NotFoundException {
+        UserDto userDto = IUserService.findUserById(idUser);
+        List<AlbumDto> albumDtoList = AlbumService.findAlbumsByUser(userDto.getId());
+        return PhotoService.photosByUser(albumDtoList);
     }
 }

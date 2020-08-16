@@ -1,11 +1,9 @@
 package com.wolox.wchallenge.controller;
 
 import com.wolox.wchallenge.dto.AlbumDto;
-import com.wolox.wchallenge.service.placeHolder.AlbumPlaceHolder;
-import com.wolox.wchallenge.service.placeHolder.UserPlaceHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.wolox.wchallenge.service.AlbumService;
+import com.wolox.wchallenge.service.IUserService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,15 +15,17 @@ public class AlbumController {
 
     public static final String ALL = "/all";
 
-    public final AlbumPlaceHolder albumPlaceHolder;
+    public final AlbumService albumService;
+    public final IUserService userService;
 
-    public AlbumController(AlbumPlaceHolder albumPlaceHolder) {
-        this.albumPlaceHolder = albumPlaceHolder;
+    public AlbumController(AlbumService albumService, IUserService userService) {
+        this.albumService = albumService;
+        this.userService = userService;
     }
 
     @GetMapping(value = ALL)
     public List<AlbumDto> all() {
-        return albumPlaceHolder.list();
+        return albumService.list();
     }
 
 }

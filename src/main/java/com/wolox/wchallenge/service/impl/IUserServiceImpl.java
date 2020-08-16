@@ -1,20 +1,18 @@
-package com.wolox.wchallenge.service.placeHolder;
+package com.wolox.wchallenge.service.impl;
 
 import com.wolox.wchallenge.dto.UserDto;
-import com.wolox.wchallenge.service.lists.UserList;
-import org.apache.catalina.User;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.constant.PlaceHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 @Service
-public class UserPlaceHolderImpl implements UserPlaceHolder {
+public class IUserServiceImpl implements IUserService {
 
     @Override
     public List<UserDto> list() {
@@ -24,10 +22,19 @@ public class UserPlaceHolderImpl implements UserPlaceHolder {
     }
 
     @Override
-    public UserDto findUser(String username) throws ChangeSetPersister.NotFoundException {
+    public UserDto findUserById(Long idUser) {
+        return list().stream()
+                .filter(userDto -> userDto.getId().equals(idUser))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("User with ID " + idUser + " does not exist"));
+    }
+
+    @Override
+    public UserDto findUserByUsername(String username) {
         return list().stream()
                 .filter(userDto -> userDto.getUsername().equals(username))
                 .findFirst()
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+                .orElseThrow(() -> new IllegalStateException("User " + username + " does not exist"));
     }
+
 }

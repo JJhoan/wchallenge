@@ -1,12 +1,11 @@
-package com.wolox.wchallenge.service.placeHolder;
+package com.wolox.wchallenge.service;
 
 import com.wolox.wchallenge.dto.AlbumDto;
 import com.wolox.wchallenge.dto.PhotoDto;
-import com.wolox.wchallenge.dto.UserDto;
 
 import java.util.List;
 
-public interface PhotoPlaceHolder {
+public interface PhotoService {
 
     List<PhotoDto> list();
 

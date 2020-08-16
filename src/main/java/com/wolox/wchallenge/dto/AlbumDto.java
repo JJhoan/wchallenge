@@ -9,9 +9,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class AlbumDto implements Serializable {
 
-    public Long userId;
+    private Long userId;
 
-    public Long id;
+    private Long id;
 
-    public String title;
+    private String title;
 }
