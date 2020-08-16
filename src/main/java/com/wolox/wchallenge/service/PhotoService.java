@@ -9,5 +9,5 @@ public interface PhotoService {
 
     List<PhotoDto> list();
 
-    List<PhotoDto> photosByUser(List<AlbumDto> albumDtoList);
+    List<PhotoDto> photosByUser(Long idUser);
 }

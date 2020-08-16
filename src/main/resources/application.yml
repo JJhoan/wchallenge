@@ -5,6 +5,8 @@ spring:
     password: wolox
     driver-class-name: org.postgresql.Driver
   jpa:
+    hibernate:
+      ddl-auto: update
     generate-ddl: true
     show-sql: true
     properties:
@@ -15,3 +17,4 @@ spring:
 server:
   servlet:
     context-path: /wchallenge/
+  port: 8081

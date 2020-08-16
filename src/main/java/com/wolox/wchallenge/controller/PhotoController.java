@@ -22,7 +22,7 @@ public class PhotoController {
 
     public static final String ALL = "/all";
 
-    public static final String PHOTOS_BY_USER = "/photosByUser/{idUser}";
+    public static final String PHOTOS_BY_USER = "/{idUser}";
 
     public final PhotoService PhotoService;
 
@@ -42,10 +42,7 @@ public class PhotoController {
     }
 
     @GetMapping(value = PHOTOS_BY_USER )
-//    @PreAuthorize("isMember(#idUser)")
-    public List<PhotoDto> photoByUser(@PathVariable Long idUser) throws ChangeSetPersister.NotFoundException {
-        UserDto userDto = IUserService.findUserById(idUser);
-        List<AlbumDto> albumDtoList = AlbumService.findAlbumsByUser(userDto.getId());
-        return PhotoService.photosByUser(albumDtoList);
+    public List<PhotoDto> photoByUser(@PathVariable Long idUser) {
+        return PhotoService.photosByUser(idUser);
     }
 }

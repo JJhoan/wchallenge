@@ -15,6 +15,4 @@ public interface AlbumService {
 
     AlbumDto getAlbum(Long idAlbum);
 
-    AlbumDto findAlbumByOwner(Long idAlbum, Long idUser);
-
 }

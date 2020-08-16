@@ -22,8 +22,11 @@ public class UserDetail implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         UserDto user = IUserService.findUserByUsername(username);
+        if(user == null ){
+            throw new UsernameNotFoundException("User does not exist");
+        }
         return User.builder()
                 .username(user.getUsername())
                 .password(bCryptPasswordEncoder.encode(user.getUsername()))

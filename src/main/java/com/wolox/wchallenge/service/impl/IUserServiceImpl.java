@@ -1,5 +1,6 @@
 package com.wolox.wchallenge.service.impl;
 
+import com.wolox.wchallenge.dto.AlbumDto;
 import com.wolox.wchallenge.dto.UserDto;
 import com.wolox.wchallenge.service.IUserService;
 import com.wolox.wchallenge.constant.PlaceHolder;
@@ -16,25 +17,27 @@ public class IUserServiceImpl implements IUserService {
 
     @Override
     public List<UserDto> list() {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<UserDto[]> response = restTemplate.getForEntity(PlaceHolder.USERS, UserDto[].class);
-        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+        return listOfUsers(PlaceHolder.USERS);
     }
 
     @Override
-    public UserDto findUserById(Long idUser) {
-        return list().stream()
-                .filter(userDto -> userDto.getId().equals(idUser))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("User with ID " + idUser + " does not exist"));
+    public UserDto getUser(Long idUser) {
+        return user(PlaceHolder.USERS_BY_ID + idUser);
     }
 
     @Override
     public UserDto findUserByUsername(String username) {
-        return list().stream()
-                .filter(userDto -> userDto.getUsername().equals(username))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("User " + username + " does not exist"));
+        return user(PlaceHolder.USER_BY_USERNAME + username);
+    }
+
+    public List<UserDto> listOfUsers(String url) {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<UserDto[]> response = restTemplate.getForEntity(url, UserDto[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
+
+    public UserDto user(String url) {
+        return listOfUsers(url).stream().findFirst().orElse(null);
     }
 
 }

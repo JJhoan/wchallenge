@@ -25,13 +25,15 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasAccess(Long idAlbum) {
         User user = (User) getPrincipal();
         AlbumDto album = albumService.getAlbum(idAlbum);
+        if(album == null) {
+            return false;
+        }
         UserDto userDto = userService.findUserByUsername(user.getUsername());
-        AlbumDto albumDto = albumService.findAlbumByOwner(idAlbum, userDto.getId());
-        if(albumDto != null) {
+        if(album.getUserId().equals(userDto.getId()) ) {
             return true;
         }
         AccessUserAlbum accessUserAlbum = accessUserAlbumService.findPermissions(userDto.getId(), idAlbum);
-        return accessUserAlbum != null && accessUserAlbum.getPermissions().contains(ApplicationUserPermission.valueOf("write"));
+        return accessUserAlbum != null && accessUserAlbum.getPermissions().contains(ApplicationUserPermission.WRITE);
     }
 
     @Override

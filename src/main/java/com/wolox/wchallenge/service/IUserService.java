@@ -8,7 +8,7 @@ public interface IUserService {
 
     List<UserDto> list();
 
-    UserDto findUserById(Long idUser);
+    UserDto getUser(Long idUser);
 
     UserDto findUserByUsername(String username);
 }

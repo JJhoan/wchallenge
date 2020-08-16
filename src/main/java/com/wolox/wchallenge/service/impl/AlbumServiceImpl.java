@@ -24,32 +24,33 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public List<AlbumDto> list() {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<AlbumDto[]> response = restTemplate.getForEntity(PlaceHolder.ALBUMS, AlbumDto[].class);
-        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+        return listOfAlbums(PlaceHolder.ALBUMS);
+//        RestTemplate restTemplate = new RestTemplate();
+//        ResponseEntity<AlbumDto[]> response = restTemplate.getForEntity(PlaceHolder.ALBUMS, AlbumDto[].class);
+//        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
     @Override
-    public List<AlbumDto> findAlbumsByUser(Long id) {
-        return list().stream()
-                .filter(albumDto -> albumDto.getUserId().equals(id))
-                .collect(Collectors.toList());
+    public List<AlbumDto> findAlbumsByUser(Long userId) {
+        return listOfAlbums(PlaceHolder.ALBUMS_BY_USER + userId);
+//        RestTemplate restTemplate = new RestTemplate();
+//        ResponseEntity<AlbumDto[]> response = restTemplate.getForEntity(PlaceHolder.ALBUMS_BY_USER+userId, AlbumDto[].class);
+//        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
     @Override
     public AlbumDto getAlbum(Long idAlbum) {
-        return list().stream()
-                .filter(albumDto -> albumDto.getId().equals(idAlbum))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("The Album " + idAlbum + " does not exist"));
+        return album(PlaceHolder.ALBUMS_BY_ID + idAlbum);
     }
 
-    @Override
-    public AlbumDto findAlbumByOwner(Long idAlbum, Long idUser) {
-        return list().stream()
-                .filter(albumDto -> albumDto.getId().equals(idAlbum) && albumDto.getUserId().equals(idUser))
-                .findFirst().orElse(null);
+    public List<AlbumDto> listOfAlbums(String url) {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<AlbumDto[]> response = restTemplate.getForEntity(url, AlbumDto[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
+    public AlbumDto album(String url) {
+        return listOfAlbums(url).stream().findFirst().orElse(null);
+    }
 
 }

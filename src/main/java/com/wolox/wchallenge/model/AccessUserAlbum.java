@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import com.wolox.wchallenge.security.ApplicationUserPermission;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.checkerframework.common.aliasing.qual.Unique;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.*;
@@ -17,8 +19,10 @@ public class AccessUserAlbum {
     @GeneratedValue
     private Long id;
 
+    @NaturalId
     private Long idUser;
 
+    @NaturalId
     private Long idAlbum;
 
     @ElementCollection(targetClass = ApplicationUserPermission.class)
@@ -32,10 +36,17 @@ public class AccessUserAlbum {
         this.permissions = Sets.newHashSet(applicationUserPermissions);
     }
 
-    public AccessUserAlbum(Long idUser, Long idAlbum, List<ApplicationUserPermission> applicationUserPermissions) {
+    public AccessUserAlbum(Long idUser, Long idAlbum, Set<ApplicationUserPermission> applicationUserPermissions) {
         this.idUser = idUser;
         this.idAlbum = idAlbum;
-        this.permissions = Sets.newHashSet(applicationUserPermissions);
+        this.permissions = applicationUserPermissions;
+    }
+
+    public AccessUserAlbum(Long id, Long idUser, Long idAlbum, Set<ApplicationUserPermission> applicationUserPermissions) {
+        this.id = id;
+        this.idUser = idUser;
+        this.idAlbum = idAlbum;
+        this.permissions = applicationUserPermissions;
     }
 
 
