@@ -1,9 +1,10 @@
 package com.wolox.wchallenge.security;
 
+import com.wolox.wchallenge.controller.exception.AlbumNotFoundException;
 import com.wolox.wchallenge.dto.AlbumDto;
 import com.wolox.wchallenge.dto.UserDto;
-import com.wolox.wchallenge.model.AccessUserAlbum;
-import com.wolox.wchallenge.service.AccessUserAlbumService;
+import com.wolox.wchallenge.model.PrivilegesManagement;
+import com.wolox.wchallenge.service.PrivilegeManagementService;
 import com.wolox.wchallenge.service.AlbumService;
 import com.wolox.wchallenge.service.IUserService;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
@@ -14,7 +15,7 @@ import org.springframework.security.core.userdetails.User;
 
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
-    private AccessUserAlbumService accessUserAlbumService;
+    private PrivilegeManagementService privilegeManagementService;
     private IUserService userService;
     private AlbumService albumService;
 
@@ -26,19 +27,18 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         User user = (User) getPrincipal();
         AlbumDto album = albumService.getAlbum(idAlbum);
         if(album == null) {
-            return false;
+            throw new AlbumNotFoundException("Not exist album.");
         }
         UserDto userDto = userService.findUserByUsername(user.getUsername());
         if(album.getUserId().equals(userDto.getId()) ) {
             return true;
         }
-        AccessUserAlbum accessUserAlbum = accessUserAlbumService.findPermissions(userDto.getId(), idAlbum);
-        return accessUserAlbum != null && accessUserAlbum.getPermissions().contains(ApplicationUserPermission.WRITE);
+        PrivilegesManagement privilegesManagement = privilegeManagementService.findPermissions(userDto.getId(), idAlbum);
+        return privilegesManagement != null && privilegesManagement.getPermissions().contains(ApplicationUserPermission.WRITE);
     }
 
     @Override
     public void setFilterObject(Object o) {
-
     }
 
     @Override
@@ -48,7 +48,6 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
 
     @Override
     public void setReturnObject(Object o) {
-
     }
 
     @Override
@@ -61,8 +60,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         return null;
     }
 
-    public void setAccessUserAlbumService(AccessUserAlbumService accessUserAlbumService){
-        this.accessUserAlbumService = accessUserAlbumService;
+    public void setPrivilegeManagementService(PrivilegeManagementService privilegeManagementService){
+        this.privilegeManagementService = privilegeManagementService;
     }
 
     public void setUserService(IUserService userService){

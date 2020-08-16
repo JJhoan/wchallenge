@@ -3,14 +3,15 @@ package com.wolox.wchallenge.dto;
 import com.wolox.wchallenge.security.ApplicationUserPermission;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Getter;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class AccessUserAlbumDto implements Serializable {
+public class PrivilegeManagementDto implements Serializable {
 
     private Long idAlbum;
     private Long idUser;

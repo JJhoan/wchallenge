@@ -1,8 +1,11 @@
 package com.wolox.wchallenge.controller;
 
+import com.wolox.wchallenge.controller.exception.AlbumNotFoundException;
 import com.wolox.wchallenge.dto.AlbumDto;
 import com.wolox.wchallenge.service.AlbumService;
 import com.wolox.wchallenge.service.IUserService;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,7 +15,6 @@ import java.util.List;
 public class AlbumController {
 
     public static final String ALBUMS = "/albums";
-
     public static final String ALL = "/all";
 
     public final AlbumService albumService;
@@ -24,8 +26,13 @@ public class AlbumController {
     }
 
     @GetMapping(value = ALL)
-    public List<AlbumDto> all() {
-        return albumService.list();
+    @ApiOperation(value = "retrieveAllAlbums", notes = "Retrieve all albums, generate a exception when albums not exist.")
+    public ResponseEntity<List<AlbumDto>> all() {
+        List<AlbumDto> all = albumService.list();
+        if(all == null || all.isEmpty()) {
+            throw new AlbumNotFoundException("Not exist albums.");
+        }
+        return ResponseEntity.ok(all);
     }
 
 }

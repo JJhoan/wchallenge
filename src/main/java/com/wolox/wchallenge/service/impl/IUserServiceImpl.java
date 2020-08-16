@@ -1,9 +1,8 @@
 package com.wolox.wchallenge.service.impl;
 
-import com.wolox.wchallenge.dto.AlbumDto;
+import com.wolox.wchallenge.constant.PlaceHolder;
 import com.wolox.wchallenge.dto.UserDto;
 import com.wolox.wchallenge.service.IUserService;
-import com.wolox.wchallenge.constant.PlaceHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

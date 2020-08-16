@@ -10,8 +10,6 @@ import java.io.Serializable;
 public class AlbumDto implements Serializable {
 
     private Long userId;
-
     private Long id;
-
     private String title;
 }

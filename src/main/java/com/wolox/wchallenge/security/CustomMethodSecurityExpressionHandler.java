@@ -1,6 +1,6 @@
 package com.wolox.wchallenge.security;
 
-import com.wolox.wchallenge.service.AccessUserAlbumService;
+import com.wolox.wchallenge.service.PrivilegeManagementService;
 import com.wolox.wchallenge.service.AlbumService;
 import com.wolox.wchallenge.service.IUserService;
 import org.aopalliance.intercept.MethodInvocation;
@@ -27,7 +27,7 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
         root.setPermissionEvaluator(getPermissionEvaluator());
         root.setTrustResolver(this.trustResolver);
         root.setRoleHierarchy(getRoleHierarchy());
-        root.setAccessUserAlbumService(applicationContext.getBean(AccessUserAlbumService.class));
+        root.setPrivilegeManagementService(applicationContext.getBean(PrivilegeManagementService.class));
         root.setUserService(applicationContext.getBean(IUserService.class));
         root.setAlbumService(applicationContext.getBean(AlbumService.class));
         return root;

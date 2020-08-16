@@ -10,13 +10,9 @@ import java.io.Serializable;
 public class PhotoDto implements Serializable    {
 
     public Long Id;
-
     public Long albumId;
-
     public String title;
-
     public String url;
-
     public String thumbnailUrl;
 
 }

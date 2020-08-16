@@ -1,6 +1,5 @@
 package com.wolox.wchallenge.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
-    @Autowired
     final ApplicationContext applicationContext;
 
     public MethodSecurityConfig(ApplicationContext applicationContext) {
