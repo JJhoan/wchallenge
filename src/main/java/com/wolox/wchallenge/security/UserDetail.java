@@ -1,7 +1,7 @@
 package com.wolox.wchallenge.security;
 
 import com.wolox.wchallenge.dto.UserDto;
-import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.service.UserService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,18 +12,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetail implements UserDetailsService {
 
-    private final IUserService IUserService;
+    private final UserService UserService;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserDetail(IUserService IUserService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.IUserService = IUserService;
+    public UserDetail(UserService UserService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.UserService = UserService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        UserDto user = IUserService.findUserByUsername(username);
+        UserDto user = UserService.findUserByUsername(username);
         if(user == null ){
             throw new UsernameNotFoundException("User does not exist");
         }

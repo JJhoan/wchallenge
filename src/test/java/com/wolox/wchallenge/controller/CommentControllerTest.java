@@ -14,37 +14,30 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PhotoControllerTest {
+public class CommentControllerTest {
 
     @Autowired
     private TestRestTemplate template;
 
     @Test
-    public void givenAuthRequestOnAllPhotosService_shouldSucceedWith200()  {
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .getForEntity(PhotoController.PHOTOS + PhotoController.ALL, String.class);
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-    }
-
-    @Test
-    public void givenAuthRequestOnPhotosByUserService_shouldSucceedWith200()  {
-        Map<String, String> urlParams = new ImmutableMap.Builder<String, String >().put("idUser", "1").build();
+    public void givenAuthRequestOnCommentsByNameService_shouldSucceedWith200() {
+        Map<String, String> urlParams = new ImmutableMap.Builder<String, String >().put("name", "id labore ex et quam laborum").build();
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromUriString(PhotoController.PHOTOS + PhotoController.PHOTOS_BY_USER);
+                UriComponentsBuilder.fromUriString(CommentController.COMMENTS + CommentController.COMMENTS_BY_NAME);
         ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
                 .exchange(builder.buildAndExpand(urlParams).toUri(), HttpMethod.GET, null, String.class);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
-    public void givenAuthRequestOnPhotosByUserService_shouldFailWith404WhenTheUserNotExist()  {
-        Map<String, String> urlParams = new ImmutableMap.Builder<String, String >().put("idUser", "0").build();
+    public void givenAuthRequestOnCommentsByNameService_shouldFailWith404WhenTheNameNotExist() {
+        Map<String, String> urlParams = new ImmutableMap.Builder<String, String >().put("name", "hello").build();
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromUriString(PhotoController.PHOTOS + PhotoController.PHOTOS_BY_USER);
+                UriComponentsBuilder.fromUriString(CommentController.COMMENTS + CommentController.COMMENTS_BY_NAME);
         ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
                 .exchange(builder.buildAndExpand(urlParams).toUri(), HttpMethod.GET, null, String.class);
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());

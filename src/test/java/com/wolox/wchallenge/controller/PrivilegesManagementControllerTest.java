@@ -66,7 +66,7 @@ public class PrivilegesManagementControllerTest {
     }
 
     @Test
-    public void givenAuthRequestOnShareByUserServiceWithEmptyAlbum_shouldFailWith404() {
+    public void givenAuthRequestOnShareByUserService_shouldFailWith404WhenTheAlbumNotExist() {
         String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.SHARE_BY_USER;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -85,7 +85,7 @@ public class PrivilegesManagementControllerTest {
     }
 
     @Test
-    public void givenAuthRequestOnShareByUserServiceWithEmptyUser_shouldFailWith404() {
+    public void givenAuthRequestOnShareByUserService_shouldFailWith404WhenEmptyUserNotExist() {
         String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.SHARE_BY_USER;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -126,7 +126,7 @@ public class PrivilegesManagementControllerTest {
     }
 
     @Test
-    public void givenAuthRequestOnUpdatePermissionsServiceWithNotPrivilegesSaved_shouldFailWith404() {
+    public void givenAuthRequestOnUpdatePermissionsService_shouldFailWith404WhenHaveNotPrivilegesSaved() {
         permissions.remove(ApplicationUserPermission.WRITE);
 
         String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.UPDATE_PERMISSIONS;
@@ -166,7 +166,7 @@ public class PrivilegesManagementControllerTest {
     }
 
     @Test
-    public void givenAuthRequestOnFilteredUsersService_shouldFailWith404()  {
+    public void givenAuthRequestOnFilteredUsersService_shouldFailWith404WhenNotExistThePermission()  {
         Map<String, String> urlParams = new ImmutableMap.Builder<String, String >()
                 .put("idAlbum", "1")
                 .put("permission", ApplicationUserPermission.READ.name())

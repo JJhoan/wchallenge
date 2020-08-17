@@ -3,7 +3,6 @@ package com.wolox.wchallenge.service.impl;
 import com.google.common.collect.ImmutableMap;
 import com.wolox.wchallenge.constant.PlaceHolder;
 import com.wolox.wchallenge.controller.PhotoController;
-import com.wolox.wchallenge.controller.UserController;
 import com.wolox.wchallenge.dto.PhotoDto;
 import com.wolox.wchallenge.service.PhotoService;
 import org.springframework.http.HttpMethod;

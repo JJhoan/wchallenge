@@ -12,7 +12,7 @@ import com.wolox.wchallenge.repository.PrivilegesManagementMapper;
 import com.wolox.wchallenge.security.ApplicationUserPermission;
 import com.wolox.wchallenge.service.PrivilegeManagementService;
 import com.wolox.wchallenge.service.AlbumService;
-import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -32,13 +32,13 @@ public class PrivilegesManagementController {
     public static final String FILTERED_USERS = "/{idAlbum}/{permission}";
 
     public final AlbumService albumService;
-    public final IUserService userService;
+    public final UserService userService;
     public final PrivilegeManagementService privilegeManagementService;
     public final PrivilegesManagementMapper privilegesManagementMapper;
 
     public PrivilegesManagementController(
             AlbumService albumService,
-            IUserService userService,
+            UserService userService,
             PrivilegeManagementService privilegeManagementService,
             PrivilegesManagementMapper privilegesManagementMapper) {
         this.albumService = albumService;

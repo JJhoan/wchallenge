@@ -6,7 +6,7 @@ import com.wolox.wchallenge.dto.UserDto;
 import com.wolox.wchallenge.model.PrivilegesManagement;
 import com.wolox.wchallenge.service.PrivilegeManagementService;
 import com.wolox.wchallenge.service.AlbumService;
-import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.service.UserService;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.User;
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
     private PrivilegeManagementService privilegeManagementService;
-    private IUserService userService;
+    private UserService userService;
     private AlbumService albumService;
 
     public CustomMethodSecurityExpressionRoot(Authentication authentication) {
@@ -64,7 +64,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         this.privilegeManagementService = privilegeManagementService;
     }
 
-    public void setUserService(IUserService userService){
+    public void setUserService(UserService userService){
         this.userService = userService;
     }
 

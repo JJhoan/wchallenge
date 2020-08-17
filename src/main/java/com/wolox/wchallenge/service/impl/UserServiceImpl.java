@@ -2,7 +2,7 @@ package com.wolox.wchallenge.service.impl;
 
 import com.wolox.wchallenge.constant.PlaceHolder;
 import com.wolox.wchallenge.dto.UserDto;
-import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class IUserServiceImpl implements IUserService {
+public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> list() {

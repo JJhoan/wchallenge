@@ -2,7 +2,7 @@ package com.wolox.wchallenge.security;
 
 import com.wolox.wchallenge.service.PrivilegeManagementService;
 import com.wolox.wchallenge.service.AlbumService;
-import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.service.UserService;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +28,7 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
         root.setTrustResolver(this.trustResolver);
         root.setRoleHierarchy(getRoleHierarchy());
         root.setPrivilegeManagementService(applicationContext.getBean(PrivilegeManagementService.class));
-        root.setUserService(applicationContext.getBean(IUserService.class));
+        root.setUserService(applicationContext.getBean(UserService.class));
         root.setAlbumService(applicationContext.getBean(AlbumService.class));
         return root;
     }

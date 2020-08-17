@@ -5,7 +5,7 @@ import com.wolox.wchallenge.model.PrivilegesManagement;
 import com.wolox.wchallenge.repository.IPrivilegeManagementRepository;
 import com.wolox.wchallenge.security.ApplicationUserPermission;
 import com.wolox.wchallenge.service.PrivilegeManagementService;
-import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 public class PrivilegeManagementServiceImpl implements PrivilegeManagementService {
 
     private final IPrivilegeManagementRepository privilegeManagementRepository;
-    private final IUserService userService;
+    private final UserService userService;
 
-    public PrivilegeManagementServiceImpl(IPrivilegeManagementRepository privilegeManagementRepository, IUserService userService) {
+    public PrivilegeManagementServiceImpl(IPrivilegeManagementRepository privilegeManagementRepository, UserService userService) {
         this.privilegeManagementRepository = privilegeManagementRepository;
         this.userService = userService;
     }

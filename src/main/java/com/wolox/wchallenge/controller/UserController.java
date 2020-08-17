@@ -2,7 +2,7 @@ package com.wolox.wchallenge.controller;
 
 import com.wolox.wchallenge.controller.exception.UserNotFoundException;
 import com.wolox.wchallenge.dto.UserDto;
-import com.wolox.wchallenge.service.IUserService;
+import com.wolox.wchallenge.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +18,9 @@ public class UserController {
     public static final String USERS = "/users";
     public static final String ALL = "/all";
 
-    public final IUserService userService;
+    public final UserService userService;
 
-    public UserController(IUserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 

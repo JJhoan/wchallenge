@@ -4,7 +4,7 @@ import com.wolox.wchallenge.dto.UserDto;
 
 import java.util.List;
 
-public interface IUserService {
+public interface UserService {
 
     List<UserDto> list();
 
