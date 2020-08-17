@@ -1,184 +1,189 @@
 package com.wolox.wchallenge.controller;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wolox.wchallenge.WchallengeApplication;
+import com.wolox.wchallenge.dto.PrivilegeManagementDto;
 import com.wolox.wchallenge.model.PrivilegesManagement;
 import com.wolox.wchallenge.repository.IPrivilegeManagementRepository;
+import com.wolox.wchallenge.repository.PrivilegesManagementMapper;
 import com.wolox.wchallenge.security.ApplicationUserPermission;
-import net.minidev.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
+        classes = WchallengeApplication.class)
+@AutoConfigureMockMvc
+@TestPropertySource(
+        locations = "classpath:application-integrationtest.yml")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class PrivilegesManagementControllerTest {
 
     @Autowired
-    private TestRestTemplate template;
+    private MockMvc mvc;
 
-    @MockBean
+    @Autowired
     private IPrivilegeManagementRepository privilegeManagementRepository;
 
-    private PrivilegesManagement privilegesManagement;
+    @Autowired
+    private PrivilegesManagementMapper privilegesManagementMapper;
+
+    private PrivilegeManagementDto privilegeManagementDto;
     private Set<ApplicationUserPermission> permissions;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void before() {
         permissions = new HashSet<>();
-        permissions.add(ApplicationUserPermission.WRITE);
         permissions.add(ApplicationUserPermission.READ);
-        privilegesManagement = new PrivilegesManagement(1L, 2L, 1L, permissions);
+        privilegeManagementDto = new PrivilegeManagementDto();
+        privilegeManagementDto.setIdUser(2L);
+        privilegeManagementDto.setIdAlbum(1L);
+        privilegeManagementDto.setPermissions(permissions);
     }
 
     @Test
-    public void givenAuthRequestOnShareByUserService_shouldSucceedWith200() {
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnShareByUserService_shouldSucceedWith200() throws Exception {
         String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.SHARE_BY_USER;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject personJsonObject = new JSONObject();
-        personJsonObject.put("idAlbum", 1);
-        personJsonObject.put("idUser", 2);
-        personJsonObject.put("permissions", permissions);
-        HttpEntity<String> request = new HttpEntity<>(personJsonObject.toString(), headers);
 
-        Mockito.when(privilegeManagementRepository.save(Mockito.any())).thenReturn(privilegesManagement);
+        mvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(privilegeManagementDto)))
+                .andExpect(status().isCreated())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn();
 
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .postForEntity(url, request, String.class);
+        PrivilegesManagement result = privilegeManagementRepository.findById(1L).orElse(null);
+        Assert.assertNotNull(result);
 
-        assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
-    public void givenAuthRequestOnShareByUserService_shouldFailWith404WhenTheAlbumNotExist() {
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnShareByUserService_shouldFailWith404WhenTheAlbumNotExist() throws Exception {
         String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.SHARE_BY_USER;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject personJsonObject = new JSONObject();
-        personJsonObject.put("idAlbum", 0);
-        personJsonObject.put("idUser", 2);
-        personJsonObject.put("permissions", permissions);
-        HttpEntity<String> request = new HttpEntity<>(personJsonObject.toString(), headers);
 
-        Mockito.when(privilegeManagementRepository.save(Mockito.any())).thenReturn(privilegesManagement);
+        privilegeManagementDto.setIdAlbum(0L);
 
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .postForEntity(url, request, String.class);
-
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        mvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(privilegeManagementDto)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void givenAuthRequestOnShareByUserService_shouldFailWith404WhenEmptyUserNotExist() {
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnShareByUserService_shouldFailWith409WhenThePermissionAlreadyExist() throws Exception {
         String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.SHARE_BY_USER;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject personJsonObject = new JSONObject();
-        personJsonObject.put("idAlbum", 1);
-        personJsonObject.put("idUser", 0);
-        personJsonObject.put("permissions", permissions);
-        HttpEntity<String> request = new HttpEntity<>(personJsonObject.toString(), headers);
+        PrivilegesManagement privilegesManagement = privilegesManagementMapper.mapToEntity(privilegeManagementDto);
 
-        Mockito.when(privilegeManagementRepository.save(Mockito.any())).thenReturn(privilegesManagement);
+        privilegeManagementRepository.saveAndFlush(privilegesManagement);
 
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .postForEntity(url, request, String.class);
-
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        mvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(privilegeManagementDto)))
+                .andExpect(status().isConflict());
     }
 
     @Test
-    public void givenAuthRequestOnUpdatePermissionsService_shouldSucceedWith200() {
-        permissions.remove(ApplicationUserPermission.WRITE);
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnShareByUserService_shouldFailWith404WhenEmptyUserNotExist() throws Exception {
+        String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.SHARE_BY_USER;
+
+        privilegeManagementDto.setIdUser(0L);
+
+        mvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(privilegeManagementDto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnUpdatePermissionsService_shouldSucceedWith200() throws Exception {
+        String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.UPDATE_PERMISSIONS;
+        PrivilegesManagement privilegesManagement = privilegesManagementMapper.mapToEntity(privilegeManagementDto);
+
+        privilegesManagement = privilegeManagementRepository.saveAndFlush(privilegesManagement);
+
+        permissions.add(ApplicationUserPermission.WRITE);
+        privilegeManagementDto.setPermissions(permissions);
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(url)
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(privilegeManagementDto)))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        PrivilegesManagement result = privilegeManagementRepository
+                .findById(privilegesManagement.getId())
+                .orElse(null);
+
+        Assert.assertNotNull(result);
+    }
+
+    @Test
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnUpdatePermissionsService_shouldFailWith404WhenHaveNotPrivilegesSaved() throws Exception {
         String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.UPDATE_PERMISSIONS;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject personJsonObject = new JSONObject();
-        personJsonObject.put("idAlbum", 1);
-        personJsonObject.put("idUser", 2);
-        personJsonObject.put("permissions", permissions);
-        HttpEntity<String> request = new HttpEntity<>(personJsonObject.toString(), headers);
+        permissions.add(ApplicationUserPermission.WRITE);
+        privilegeManagementDto.setPermissions(permissions);
+        mvc.perform(MockMvcRequestBuilders.put(url)
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(privilegeManagementDto)))
+                .andExpect(status().isNotFound());
 
-        Mockito.when(privilegeManagementRepository.save(Mockito.any())).thenReturn(privilegesManagement);
-        Mockito.when(privilegeManagementRepository.findByIdUserAndIdAlbum(2L, 1L)).thenReturn(privilegesManagement);
-
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .exchange(url, HttpMethod.PUT, request, String.class);
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
-    public void givenAuthRequestOnUpdatePermissionsService_shouldFailWith404WhenHaveNotPrivilegesSaved() {
-        permissions.remove(ApplicationUserPermission.WRITE);
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnFilteredUsersService_shouldSucceedWith200() throws Exception {
+        String url = PrivilegesManagementController.ACCESS_ALBUM  + "/1/READ";
+        PrivilegesManagement privilegesManagement = privilegesManagementMapper.mapToEntity(privilegeManagementDto);
+        privilegeManagementRepository.saveAndFlush(privilegesManagement);
 
-        String url = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.UPDATE_PERMISSIONS;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject personJsonObject = new JSONObject();
-        personJsonObject.put("idAlbum", 1);
-        personJsonObject.put("idUser", 2);
-        personJsonObject.put("permissions", permissions);
-        HttpEntity<String> request = new HttpEntity<>(personJsonObject.toString(), headers);
+        privilegeManagementDto.setIdUser(3L);
+        permissions.add(ApplicationUserPermission.WRITE);
+        privilegeManagementDto.setPermissions(permissions);
+        PrivilegesManagement privilegesManagement2 = privilegesManagementMapper.mapToEntity(privilegeManagementDto);
+        privilegeManagementRepository.saveAndFlush(privilegesManagement2);
 
-        Mockito.when(privilegeManagementRepository.findByIdUserAndIdAlbum(2L, 1L)).thenReturn(null);
-
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .exchange(url, HttpMethod.PUT, request, String.class);
-
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        mvc.perform(MockMvcRequestBuilders.get(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].name", is("Ervin Howell")))
+                .andExpect(jsonPath("$[1].name", is("Clementine Bauch")));
     }
 
     @Test
-    public void givenAuthRequestOnFilteredUsersService_shouldSucceedWith200()  {
-        List<Long> idUsers = Lists.newArrayList(1L,2L, 3L, 4L, 5L);
-
-        Map<String, String> urlParams = new ImmutableMap.Builder<String, String >()
-                .put("idAlbum", "1")
-                .put("permission", ApplicationUserPermission.READ.name())
-                .build();
-        String uri = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.FILTERED_USERS;
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri);
-
-        Mockito.when(privilegeManagementRepository.usersWithPermissionsInAlbum(1L, ApplicationUserPermission.READ)).thenReturn(idUsers);
-
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .exchange(builder.buildAndExpand(urlParams).toUri(), HttpMethod.GET, null, String.class);
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-    }
-
-    @Test
-    public void givenAuthRequestOnFilteredUsersService_shouldFailWith404WhenNotExistThePermission()  {
-        Map<String, String> urlParams = new ImmutableMap.Builder<String, String >()
-                .put("idAlbum", "1")
-                .put("permission", ApplicationUserPermission.READ.name())
-                .build();
-        String uri = PrivilegesManagementController.ACCESS_ALBUM + PrivilegesManagementController.FILTERED_USERS;
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri);
-
-        Mockito.when(privilegeManagementRepository.usersWithPermissionsInAlbum(1L, ApplicationUserPermission.READ)).thenReturn(null);
-
-        ResponseEntity<String> result = template.withBasicAuth("Bret", "Bret")
-                .exchange(builder.buildAndExpand(urlParams).toUri(), HttpMethod.GET, null, String.class);
-
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+    @WithMockUser(username = "Bret", password = "Bret")
+    public void givenAuthRequestOnFilteredUsersService_shouldFailWith404WhenNotExistThePermission() throws Exception {
+        String url = PrivilegesManagementController.ACCESS_ALBUM  + "/1/READ";
+        mvc.perform(MockMvcRequestBuilders.get(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

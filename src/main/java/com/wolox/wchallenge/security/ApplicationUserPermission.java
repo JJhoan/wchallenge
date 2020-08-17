@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@JsonFormat(shape = JsonFormat.Shape.NATURAL)
 public enum ApplicationUserPermission implements Serializable {
     READ("read"),
     WRITE("write");

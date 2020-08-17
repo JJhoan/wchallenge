@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class PrivilegeManagementDto implements Serializable {
 
+    private Long id;
     private Long idAlbum;
     private Long idUser;
     private Set<ApplicationUserPermission> permissions = new HashSet<>(EnumSet.allOf(ApplicationUserPermission.class));

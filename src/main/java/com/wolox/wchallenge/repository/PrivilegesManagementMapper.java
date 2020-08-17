@@ -15,6 +15,7 @@ public class PrivilegesManagementMapper {
 
     public PrivilegeManagementDto mapToDto(PrivilegesManagement privilegesManagement) {
         PrivilegeManagementDto privilegeManagementDto = new PrivilegeManagementDto();
+        privilegeManagementDto.setId(privilegesManagement.getId());
         privilegeManagementDto.setIdUser(privilegesManagement.getIdUser());
         privilegeManagementDto.setIdAlbum(privilegesManagement.getIdAlbum());
         privilegeManagementDto.setPermissions(privilegesManagement.getPermissions());

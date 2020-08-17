@@ -4,6 +4,8 @@ import com.wolox.wchallenge.controller.exception.UserNotFoundException;
 import com.wolox.wchallenge.dto.UserDto;
 import com.wolox.wchallenge.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +27,11 @@ public class UserController {
     }
 
     @GetMapping(value = ALL)
-    @ApiOperation(value = "retrieveAllUsers", notes = "Retrieve all users, generate a exception when users not exist.")
+    @ApiOperation(value = "Giving all users", response = UserDto[].class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved users"),
+            @ApiResponse(code = 404, message = "users not found")
+    })
     public ResponseEntity<List<UserDto>> all() {
         List<UserDto> all = userService.list();
         if(all == null || all.isEmpty()) {

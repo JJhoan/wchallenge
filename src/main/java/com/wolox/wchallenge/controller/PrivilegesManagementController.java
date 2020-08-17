@@ -4,16 +4,18 @@ import com.wolox.wchallenge.controller.exception.AlbumNotFoundException;
 import com.wolox.wchallenge.controller.exception.PrivilegeManagementConstraintException;
 import com.wolox.wchallenge.controller.exception.PrivilegeManagementNotFoundException;
 import com.wolox.wchallenge.controller.exception.UserNotFoundException;
-import com.wolox.wchallenge.dto.PrivilegeManagementDto;
 import com.wolox.wchallenge.dto.AlbumDto;
+import com.wolox.wchallenge.dto.PrivilegeManagementDto;
 import com.wolox.wchallenge.dto.UserDto;
 import com.wolox.wchallenge.model.PrivilegesManagement;
 import com.wolox.wchallenge.repository.PrivilegesManagementMapper;
 import com.wolox.wchallenge.security.ApplicationUserPermission;
-import com.wolox.wchallenge.service.PrivilegeManagementService;
 import com.wolox.wchallenge.service.AlbumService;
+import com.wolox.wchallenge.service.PrivilegeManagementService;
 import com.wolox.wchallenge.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,7 @@ import java.util.List;
 public class PrivilegesManagementController {
 
     public static final String ACCESS_ALBUM = "/access";
-    public static final String SHARE_BY_USER = "/shared";
+    public static final String SHARE_BY_USER = "/share";
     public static final String UPDATE_PERMISSIONS = "/permission";
     public static final String FILTERED_USERS = "/{idAlbum}/{permission}";
 
@@ -49,9 +51,12 @@ public class PrivilegesManagementController {
 
     @PostMapping(value = SHARE_BY_USER)
     @PreAuthorize("hasAccess(#privilegeManagementDto.getIdAlbum())")
-    @ApiOperation(value = "shareAlbumWithOtherUsers",
-            notes = "Save the privileges of a user on an album, " +
-                    "generate a exception when : albums not exist, users not exist or there is a duplicate key.")
+    @ApiOperation(value = "Save privileges of a user on a album", response = PrivilegeManagementDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully saved privileges"),
+            @ApiResponse(code = 404, message = "Album not found"),
+            @ApiResponse(code = 404, message = "User not found"),
+    })
     public ResponseEntity<PrivilegeManagementDto> shareByUser(@RequestBody PrivilegeManagementDto privilegeManagementDto) {
         AlbumDto album = albumService.getAlbum(privilegeManagementDto.getIdAlbum());
         if (album == null) {
@@ -68,7 +73,7 @@ public class PrivilegesManagementController {
                                 user.getId(),
                                 album.getId(),
                                 privilegeManagementDto.getPermissions()));
-            return ResponseEntity.ok(privilegeManagement);
+            return ResponseEntity.status(HttpStatus.CREATED).body(privilegeManagement);
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             throw new PrivilegeManagementConstraintException("The user already have the privileges for the album.");
         } catch (Exception e) {
@@ -78,8 +83,11 @@ public class PrivilegesManagementController {
 
     @PutMapping(path = UPDATE_PERMISSIONS)
     @PreAuthorize("hasAccess(#privilegeManagementDto.getIdAlbum())")
-    @ApiOperation(value = "updatePermissions",
-            notes = "Update the privileges of a user on an album, generate a exception when privileges not exist.")
+    @ApiOperation(value = "Update privileges of a user on a album", response = PrivilegeManagementDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully updated privileges"),
+            @ApiResponse(code = 404, message = "Privileges not found")
+    })
     public ResponseEntity<PrivilegeManagementDto> updatePermissions(@RequestBody PrivilegeManagementDto privilegeManagementDto) {
         PrivilegesManagement privilegesManagement =
                 privilegeManagementService.findPermissions(
@@ -102,9 +110,11 @@ public class PrivilegesManagementController {
     }
 
     @GetMapping(value = FILTERED_USERS)
-    @ApiOperation(value = "filterUsersWithPermissionsInAAlbum",
-            notes = "Return the privileges of a user on an album, " +
-                    "generate a exception when not exist users with those privileges.")
+    @ApiOperation(value = "filterUsersWithPermissionsInAAlbum", response = UserDto[].class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved users with requested privileges"),
+            @ApiResponse(code = 404, message = "Privileges not found")
+    })
     public ResponseEntity<List<UserDto>> filteredUsers(
             @PathVariable Long idAlbum,
             @PathVariable ApplicationUserPermission permission) {
