@@ -2,8 +2,6 @@ package com.wolox.wchallenge.controller;
 
 import com.wolox.wchallenge.controller.exception.PhotoNotFoundException;
 import com.wolox.wchallenge.dto.PhotoDto;
-import com.wolox.wchallenge.service.AlbumService;
-import com.wolox.wchallenge.service.IUserService;
 import com.wolox.wchallenge.service.PhotoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +21,9 @@ public class PhotoController {
     public static final String PHOTOS_BY_USER = "/{idUser}";
 
     public final PhotoService photoService;
-    public final IUserService userService;
-    public final AlbumService albumService;
 
-    public PhotoController(PhotoService PhotoService, IUserService userService, AlbumService AlbumService) {
+    public PhotoController(PhotoService PhotoService) {
         this.photoService = PhotoService;
-        this.userService = userService;
-        this.albumService = AlbumService;
     }
 
     @GetMapping(value = ALL)
@@ -49,6 +43,5 @@ public class PhotoController {
             throw new PhotoNotFoundException("Not exist photos for the user " + idUser + ".");
         }
         return ResponseEntity.ok(photos);
-
     }
 }

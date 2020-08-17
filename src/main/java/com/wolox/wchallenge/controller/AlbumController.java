@@ -3,10 +3,11 @@ package com.wolox.wchallenge.controller;
 import com.wolox.wchallenge.controller.exception.AlbumNotFoundException;
 import com.wolox.wchallenge.dto.AlbumDto;
 import com.wolox.wchallenge.service.AlbumService;
-import com.wolox.wchallenge.service.IUserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,11 +19,9 @@ public class AlbumController {
     public static final String ALL = "/all";
 
     public final AlbumService albumService;
-    public final IUserService userService;
 
-    public AlbumController(AlbumService albumService, IUserService userService) {
+    public AlbumController(AlbumService albumService) {
         this.albumService = albumService;
-        this.userService = userService;
     }
 
     @GetMapping(value = ALL)

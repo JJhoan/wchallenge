@@ -63,10 +63,11 @@ public class PrivilegesManagementController {
         }
         try {
             PrivilegeManagementDto privilegeManagement =
-                    privilegesManagementMapper.mapToDto(privilegeManagementService.shareByUser(
-                            user.getId(),
-                            album.getId(),
-                            privilegeManagementDto.getPermissions()));
+                    privilegesManagementMapper.mapToDto(
+                            privilegeManagementService.shareByUser(
+                                user.getId(),
+                                album.getId(),
+                                privilegeManagementDto.getPermissions()));
             return ResponseEntity.ok(privilegeManagement);
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             throw new PrivilegeManagementConstraintException("The user already have the privileges for the album.");

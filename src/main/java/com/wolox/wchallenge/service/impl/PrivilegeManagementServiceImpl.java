@@ -36,15 +36,17 @@ public class PrivilegeManagementServiceImpl implements PrivilegeManagementServic
 
     @Override
     public PrivilegesManagement updatePermissions(PrivilegesManagement privilegesManagement) {
-        return privilegeManagementRepository.saveAndFlush(privilegesManagement);
+        return privilegeManagementRepository.save(privilegesManagement);
     }
 
     @Override
     public List<UserDto> usersByAlbumAndPermission(Long idAlbum, ApplicationUserPermission applicationUserPermission) {
         List<Long> idUsers = privilegeManagementRepository.usersWithPermissionsInAlbum(idAlbum, applicationUserPermission);
-        return idUsers.stream()
+        return idUsers != null
+                ? idUsers.stream()
                 .map(userService::getUser)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : null;
     }
 
 }
